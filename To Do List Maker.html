@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To DO List!</title>
+
+    <style>
+        p{
+            font-family: Arial;
+        }
+        .main-div{
+          
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-direction: column;
+
+        }
+
+        .UI{
+
+            margin-top: 50px;
+            width: 350px;
+            
+            background-color: gray;
+            
+            border-radius: 25px;
+            position: relative;
+            z-index: 1;
+            padding-top: 55px;
+            padding-bottom: 40px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100px;
+        }
+
+        .header{
+            position:absolute;
+            top: 10px;
+            left: 0;
+            right: 0;
+            height: 30px;
+            
+            border-bottom-width: 1px;
+            border-bottom-style: solid;
+            border-bottom-color: rgb(47, 47, 47);
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            flex-direction: row;;
+            padding-left: 10px;
+            
+
+        }
+
+        .to-do-content{
+            display: flex;
+            width: 100%;
+            flex-direction: column;
+            padding-left: 10px;
+            row-gap: 20px;
+            z-index: 100;
+            
+        }
+
+
+       
+        .Add-todo{
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-right: 10px;
+           
+
+        }
+
+        .text-box{
+            border-radius: 10px;
+            border-style: solid;
+            
+            box-shadow: inset 1px 2px 3px rgba(0, 0, 0, 0.555);
+            padding-left: 8px;
+            border-width: 1px;
+            
+            
+            
+        }
+
+        .task-section{
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            width: 90%;
+            height: 40px;
+            padding: 5px;
+            
+            background-color: rgb(209, 209, 209);
+            border-width:1px;
+            border-radius: 10px;
+            
+        }
+
+        .delete-button{
+            opacity: 0;
+            transition: opacity 0.3s;
+            border-radius: 5px;
+            border: none;
+            background-color: none;
+            
+
+
+        }
+
+        .task-section:hover .delete-button{
+            opacity: 1;
+        }
+
+        .delete-button:hover{
+            border-width: 4px;
+            color: red;
+        }
+        
+
+        .add-task-button{
+            border: none;
+            border-radius: 10px;
+            background-color: none;
+        }
+
+        .flexdiv{
+            display: flex;
+            flex-direction: column;
+            row-gap: 7px;
+            
+        }
+
+
+        
+    </style>
+</head>
+<body style="background-color:rgba(36, 36, 36, 0.856)" >
+<div class="main-div"> 
+    <div class="UI">
+        <div class="header">
+            <p style="
+            font-weight: bold;
+            ">Your To Do List</p>
+        </div>
+
+        <div class="Add-todo">
+            <input type="text" class="text-box" id="text-box"   placeholder="Add Your Task!">
+            <button class="add-task-button" onclick="Add()">Add Task</button>
+            <button class="add-task-button" onclick="deleter()">Clear</button>
+        </div>
+        
+            <div class="to-do-content" id="to-do-content">
+                
+
+                
+
+            </div>
+        
+
+    </div>
+</div>
+   
+    <script>
+
+        let todolist;
+        const savedTodoList = JSON.parse(localStorage.getItem('Save'))
+
+        if( Array.isArray(savedTodoList)){
+            todolist = savedTodoList;
+
+        }else{
+            todolist = [
+         
+        ]
+
+        }
+
+
+       
+
+        
+        render();
+
+        function deleted(event){
+            const buttonToDelete = event.target;
+            const todelete = buttonToDelete.id;
+
+            todolist = todolist.filter(function(example){
+                if(example.id === todelete){
+                    return false
+                } else{
+                    return true;
+                }
+            })
+            saveList()
+            render();
+
+            todolist.forEach(function(example){
+                example.isEditing = false;
+            })
+
+        }
+
+        function editing(event){
+            const idtoedit = event.target
+            const idtobeediting = idtoedit.id
+
+            todolist.forEach(function(example){
+                if(example.id === idtobeediting){
+                    example.isEditing = true
+                }else{
+                    example.isEditing = false
+                }
+            })
+
+            render()
+
+            
+
+        }
+
+        function update(event){
+
+            const id9 = event.target
+            const idtoedit = id9.id
+
+            const val = document.getElementById('input')
+            const value = val.value
+                 
+
+            todolist.forEach(function(example){
+                if(example.id === idtoedit){
+                    example.title = value
+                    example.isEditing = false
+                }else{
+                    console.log('')
+                }
+            })
+            
+
+            const newid = '' + new Date().getTime();
+
+            
+            saveList()
+            render();
+            
+
+
+
+
+
+        }
+
+        function render(){
+            document.getElementById('to-do-content').innerHTML = ''
+
+
+            todolist.forEach(function(example){
+                
+                
+                const element = document.createElement('div')
+                
+
+                const button = document.createElement('button')
+                button.innerText = 'Delete'
+                button.className = 'delete-button'
+                button.onclick = deleted;
+                button.id = example.id;
+
+                const edit = document.createElement('button')
+                edit.innerText = 'Edit'
+                edit.className = 'delete-button'
+                edit.onclick = editing;
+                
+                edit.id = example.id
+                
+
+                const flexdiv = document.createElement('div')
+                flexdiv.className = 'flexdiv'
+                flexdiv.appendChild(button)
+                flexdiv.appendChild(edit)
+
+                
+
+
+                const text = document.createElement('p')
+                text.innerText  = example.title
+                text.className = 'todo'
+                
+                
+                element.className = 'task-section'
+
+                if(example.isEditing === true){
+
+                    element.innerHTML = ''
+                   
+                        const updateButton = document.createElement('button')
+                        updateButton.innerText = 'Done';
+                        updateButton.id = example.id;
+                        updateButton.onclick = update;
+
+                        const type = document.createElement('input')
+                        type.id = 'input'
+                        element.appendChild(type)
+                        element.appendChild(updateButton)
+                    
+                    
+
+                   
+
+                }else{
+                    element.appendChild(text)
+                    element.appendChild(flexdiv)
+                    
+                }
+                const page = document.getElementById('to-do-content')
+                page.appendChild(element)
+
+                
+                
+                
+
+
+                
+
+
+               
+               
+                
+              
+            })
+            
+        }
+
+      
+
+        function Add(){
+            const val = document.getElementById('text-box')
+            const task = val.value;
+            todolist.forEach(function(example){
+                example.isEditing = false;
+            })
+
+            
+            val.value = ''
+
+
+            const newid = '' + new Date().getTime();
+
+            todolist.push({
+                title: task,
+                id: newid,
+                isEditing: false,
+            })
+            saveList()
+            render();
+
+            
+
+
+        }
+
+        function deleter(){
+            todolist = []
+            render();
+            todolist.forEach(function(example){
+                example.isEditing = false;
+            })
+            
+
+        }
+
+        function saveList(){
+            localStorage.setItem('Save', JSON.stringify(todolist))
+        }
+
+        
+    </script>
+    
+</body>
+</html>
